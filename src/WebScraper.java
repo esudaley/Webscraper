@@ -17,15 +17,10 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 public class WebScraper{
     static final String HOME_PAGE 
         = "https://www.simpletoremember.com/articles/a/48ways/";
-    static WebClient webClient;
-    static ArrayList<Shiur> shiurList = new ArrayList<Shiur>(50);
-
-    public static void main(String[] args) throws Exception {
-        webClient = initWebClient();
-        shiurList = getShiurList(HOME_PAGE);
-        shiurList.forEach(WebScraper::downloadShiur);
-    }
-
+    static WebClient webClient = initWebClient();
+    
+    public WebScraper() {}
+    
     private static WebClient initWebClient() {
         WebClient webClient = new WebClient(); 
         //turn off HtmlUnit's console logging
@@ -41,11 +36,11 @@ public class WebScraper{
      * @return A list of wayToWisdom shiurim
      * @throws Exception
      */
-    private static ArrayList<Shiur> getShiurList(String homepage) throws Exception {
+    public static ArrayList<Shiur> getShiurList() throws Exception {
         System.out.println("Scraping download urls...\n");
         
         ArrayList<Shiur> ways = new ArrayList<Shiur>(50);
-        HtmlPage page = webClient.getPage(homepage);
+        HtmlPage page = webClient.getPage(HOME_PAGE);
         List<HtmlAnchor> anchorList = page.getAnchors()
                 .stream().filter(anchor -> anchor.asText().contains("Way #"))
                 .collect(Collectors.toList());
