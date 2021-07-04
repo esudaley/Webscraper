@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -35,7 +36,7 @@ public class WebScraper{
      * Scrapes the home page for the links to each sub-page of the 48 Ways 
      * 
      * @param The home page for the 48 Ways Shiurim
-     * @return A list of wayToWisdom shiurim
+     * @return A list of shiurs
      * @throws Exception
      */
     public static ArrayList<Shiur> getShiurList() throws Exception {
@@ -46,7 +47,6 @@ public class WebScraper{
         List<HtmlAnchor> anchorList = page.getAnchors()
                 .stream().filter(anchor -> anchor.asText().contains("Way #"))
                 .collect(Collectors.toList());
-
         for (HtmlAnchor link : anchorList) {
             String name = link.asText();
             String shiurPageURL = page.getFullyQualifiedUrl(link.getHrefAttribute())
@@ -83,12 +83,14 @@ public class WebScraper{
         return downloadURL;
     }
     
-    public static void downloadShiur(Shiur shiur, String directory) {
+    public static void downloadShiur(Shiur shiur, Path directory) {
+       
         System.out.println("Downloading: " + "Way #" + shiur.getNumber() + " " 
                 + shiur.getName());
         FileOutputStream outstream;
         try {
-            outstream = new FileOutputStream(new File(directory, shiur.getName() +".mp3"));
+            outstream = new FileOutputStream(new File(directory.toFile(), 
+                    String.format("%02d", shiur.getNumber()) + " - " + shiur.getName() +".mp3"));
             UnexpectedPage page = webClient.getPage(shiur.getDownloadURL());
             InputStream instream  = page.getWebResponse().getContentAsStream();
             byte[] buffer = new byte[4096];
@@ -96,6 +98,7 @@ public class WebScraper{
                 instream.read(buffer);
                 outstream.write(buffer, 0, buffer.length);
             }
+            outstream.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
