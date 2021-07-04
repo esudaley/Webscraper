@@ -2,6 +2,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -80,14 +82,13 @@ public class WebScraper{
         } catch(IOException e) {}
         return downloadURL;
     }
-
-    public static void downloadShiur(Shiur shiur) {
-        System.out.println("Download...\n");
+    
+    public static void downloadShiur(Shiur shiur, String directory) {
         System.out.println("Downloading: " + "Way #" + shiur.getNumber() + " " 
                 + shiur.getName());
         FileOutputStream outstream;
         try {
-            outstream = new FileOutputStream(new File(shiur.getName() +".mp3"));
+            outstream = new FileOutputStream(new File(directory, shiur.getName() +".mp3"));
             UnexpectedPage page = webClient.getPage(shiur.getDownloadURL());
             InputStream instream  = page.getWebResponse().getContentAsStream();
             byte[] buffer = new byte[4096];
@@ -100,4 +101,5 @@ public class WebScraper{
         }
         System.out.println("Download Complete");
     }
+    
 }
